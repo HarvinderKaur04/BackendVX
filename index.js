@@ -38,10 +38,10 @@ const uri = process.env.MONGO_URL;
   });
 
 
-// app.get("/", (req, res) => {
-//   res.send("🚀 Backend is running successfully!");
-// });
-// const mongoose = require("mongoose");
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is running successfully!");
+});
+const mongoose = require("mongoose");
 
 app.get("/test-db", async (req, res) => {
   try {
