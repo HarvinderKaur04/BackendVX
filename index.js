@@ -17,6 +17,12 @@ const { HoldingsModel } = require('./Models/HoldingsModel.js');
 const { PositionModel } = require('./Models/PositionModel.js');
 const { WatchlistModel } = require('./Models/WatchlistModel.js');
 
+
+
+
+
+
+
 const PORT = process.env.PORT || 5000 ;
 //MongoDb Connect
 const uri = process.env.MONGO_URL;
@@ -31,6 +37,24 @@ const uri = process.env.MONGO_URL;
     console.error("DB Connection error:", err);
   });
 
+
+// app.get("/", (req, res) => {
+//   res.send("🚀 Backend is running successfully!");
+// });
+// const mongoose = require("mongoose");
+
+app.get("/test-db", async (req, res) => {
+  try {
+    await mongoose.connection.db.admin().ping();
+    res.send("✅ MongoDB is connected and working");
+  } catch (err) {
+    console.error("MongoDB connection test failed:", err.message);
+    res.status(500).send("❌ MongoDB connection failed");
+  }
+});
+
+
+  
 app.use(
   cors({
     origin: ["http://localhost:5173"],
