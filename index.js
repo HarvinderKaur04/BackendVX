@@ -53,15 +53,20 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
-
   
-app.use(
-  cors({
-    origin: ["http://localhost:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: 'https://6859ad7c9e554995a06d35cd--vyaparax-kite.netlify.app/login',
+  credentials: true,
+}));
+
+
+// app.use(
+//   cors({
+//     origin: ["http://localhost:5173"],
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true,
+//   })
+// );
 app.use(cookieParser());
 
 app.use(express.json());
