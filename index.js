@@ -1,47 +1,45 @@
 require('dotenv').config();
-
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const app = express();
 const cookieParser = require("cookie-parser");
+const cors = require('cors');
+const bodyParser = require('body-parser');
 const authRoute = require("./Routes/AuthRoute.js");
 
-
-
-
-
-// holdimg model import use for temprary data table 
+// Temporary models
 const { HoldingsModel } = require('./Models/HoldingsModel.js');
 const { PositionModel } = require('./Models/PositionModel.js');
 const { WatchlistModel } = require('./Models/WatchlistModel.js');
 
+const app = express();
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URL;
 
-
-
-
-
-
-const PORT = process.env.PORT || 5000 ;
-//MongoDb Connect
-const uri = process.env.MONGO_URL;
- mongoose.connect(uri)
+// MongoDB connection
+mongoose.connect(MONGO_URI)
   .then(() => {
-    console.log("DB Connected");
+    console.log("✅ MongoDB connected");
     app.listen(PORT, () => {
-      console.log(`App started on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("DB Connection error:", err);
+    console.error("❌ MongoDB connection error:", err);
   });
 
+// Middleware
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://vyaparax-kite.netlify.app'],
+  credentials: true,
+}));
+app.use(cookieParser());
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
+// Routes
 app.get("/", (req, res) => {
   res.send("🚀 Backend is running successfully!");
 });
-const mongoose = require("mongoose");
 
 app.get("/test-db", async (req, res) => {
   try {
@@ -53,45 +51,138 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
-  
-app.use(cors({
-  origin: 'https://6859ad7c9e554995a06d35cd--vyaparax-kite.netlify.app',
-  credentials: true,
-}));
-
-
-// app.use(
-//   cors({
-//     origin: ["http://localhost:5173"],
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true,
-//   })
-// );
-app.use(cookieParser());
-
-app.use(express.json());
-
 app.use("/", authRoute);
 
-
-
-
 app.get('/allHoldings', async (req, res) => {
-  let allHoldings = await HoldingsModel.find({});
-  res.json(allHoldings);
+  try {
+    const allHoldings = await HoldingsModel.find({});
+    res.json(allHoldings);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching holdings" });
+  }
+});
+
+app.get('/allPositions', async (req, res) => {
+  try {
+    const allPositions = await PositionModel.find({});
+    res.json(allPositions);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching positions" });
+  }
+});
+
+app.get('/allWatchlist', async (req, res) => {
+  try {
+    const allWatchlist = await WatchlistModel.find({});
+    res.json(allWatchlist);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching watchlist" });
+  }
+});
+
+// Catch-all for undefined routes
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+
+
+
+
+// require('dotenv').config();
+
+// const express = require('express');
+// const mongoose = require('mongoose');
+// const bodyParser = require('body-parser');
+// const cors = require('cors');
+// const app = express();
+// const cookieParser = require("cookie-parser");
+// const authRoute = require("./Routes/AuthRoute.js");
+
+
+
+
+
+// // holdimg model import use for temprary data table 
+// const { HoldingsModel } = require('./Models/HoldingsModel.js');
+// const { PositionModel } = require('./Models/PositionModel.js');
+// const { WatchlistModel } = require('./Models/WatchlistModel.js');
+
+
+
+
+
+
+
+// const PORT = process.env.PORT || 5000 ;
+// //MongoDb Connect
+// const uri = process.env.MONGO_URL;
+//  mongoose.connect(uri)
+//   .then(() => {
+//     console.log("DB Connected");
+//     app.listen(PORT, () => {
+//       console.log(`App started on port ${PORT}`);
+//     });
+//   })
+//   .catch((err) => {
+//     console.error("DB Connection error:", err);
+//   });
+
+
+// app.get("/", (req, res) => {
+//   res.send("🚀 Backend is running successfully!");
+// });
+// const mongoose = require("mongoose");
+
+// app.get("/test-db", async (req, res) => {
+//   try {
+//     await mongoose.connection.db.admin().ping();
+//     res.send("✅ MongoDB is connected and working");
+//   } catch (err) {
+//     console.error("MongoDB connection test failed:", err.message);
+//     res.status(500).send("❌ MongoDB connection failed");
+//   }
+// });
+
+  
+// app.use(cors({
+//   origin: 'https://6859ad7c9e554995a06d35cd--vyaparax-kite.netlify.app',
+//   credentials: true,
+// }));
+
+
+// // app.use(
+// //   cors({
+// //     origin: ["http://localhost:5173"],
+// //     methods: ["GET", "POST", "PUT", "DELETE"],
+// //     credentials: true,
+// //   })
+// // );
+// app.use(cookieParser());
+
+// app.use(express.json());
+
+// app.use("/", authRoute);
+
+
+
+
+// app.get('/allHoldings', async (req, res) => {
+//   let allHoldings = await HoldingsModel.find({});
+//   res.json(allHoldings);
   
 
-})
-app.get('/allPositions', async (req, res) => {
-  let allPositions = await PositionModel.find({});
-  res.json(allPositions);
+// })
+// app.get('/allPositions', async (req, res) => {
+//   let allPositions = await PositionModel.find({});
+//   res.json(allPositions);
 
-})
-app.get('/allWatchlist',async(req,res)=>{
-  let allWatchlist=await WatchlistModel.find({});
-  res.json(allWatchlist);
+// })
+// app.get('/allWatchlist',async(req,res)=>{
+//   let allWatchlist=await WatchlistModel.find({});
+//   res.json(allWatchlist);
 
-})
+// })
 
 //-------------------------------------------------------Tempapry Data send to MongoDB------------------
 
